@@ -24,6 +24,18 @@ app.get("/api/species", async (req, res) => {
   }
 });
 
+// create the get request for individuals
+app.get("/api/individuals", async (req, res) => {
+  try {
+    const { rows: individuals } = await db.query("SELECT * FROM individuals");
+    res.send(individuals);
+  } catch (e) {
+    return res.status(400).json({ e });
+  }
+});
+
+
+
 // // create the POST request
 // app.post("/api/students", async (req, res) => {
 //   try {
