@@ -27,8 +27,22 @@ app.get("/api/species", async (req, res) => {
 // create the get request for individuals
 app.get("/api/individuals", async (req, res) => {
   try {
-    const { rows: individuals } = await db.query("SELECT * FROM individuals");
-    res.send(individuals);
+    const result = await db.query(`
+      SELECT
+        i.id,
+        i.nickname,
+        i.scientist_name,
+        sp.common_name AS species,
+        COUNT(s.id) AS sighting_count,
+        MIN(s.sighting_time) AS first_sighting,
+        MAX(s.sighting_time) AS latest_sighting
+      FROM individuals i
+      JOIN species sp ON i.species_id = sp.id
+      LEFT JOIN sightings s ON s.individual_id = i.id
+      GROUP BY i.id, sp.common_name
+      ORDER BY i.id;
+    `);
+    res.json(result.rows);
   } catch (e) {
     return res.status(400).json({ e });
   }
