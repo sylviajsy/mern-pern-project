@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import moment from "moment";
 // import MyForm from "./Form";
-// import Student from "./Student";
 
 const initialState = {
   species: [],

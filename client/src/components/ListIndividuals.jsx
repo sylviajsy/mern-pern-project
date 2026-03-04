@@ -4,14 +4,14 @@ import moment from "moment";
 const initialState = {
   individuals: [],
   loading: false,
-  error: ""
+  error: null
 };
 
 function individualReducer(state, action) {
   switch (action.type) {
 
     case "FETCH_START":
-      return { ...state, loading: true, error: "" };
+      return { ...state, loading: true, error: null };
 
     case "FETCH_SUCCESS":
       return { ...state, loading: false, individuals: action.payload };
