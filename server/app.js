@@ -58,7 +58,7 @@ app.get("/api/sightings", async (req, res) => {
         s.location, 
         s.is_healthy, 
         s.sighter_email, 
-        i.nickname, 
+        i.nickname 
       FROM sightings s 
       JOIN individuals i ON s.individual_id = i.id
       ORDER BY i.nickname ASC, s.sighting_time DESC
