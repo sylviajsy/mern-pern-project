@@ -69,26 +69,33 @@ app.get("/api/sightings", async (req, res) => {
   }
 });
 
-// // create the POST request
-// app.post("/api/students", async (req, res) => {
-//   try {
-//     const newStudent = {
-//       firstname: req.body.firstname,
-//       lastname: req.body.lastname,
-//       iscurrent: req.body.iscurrent
-//     };
-//     //console.log([newStudent.firstname, newStudent.lastname, newStudent.iscurrent]);
-//     const result = await db.query(
-//       "INSERT INTO students(firstname, lastname, is_current) VALUES($1, $2, $3) RETURNING *",
-//       [newStudent.firstname, newStudent.lastname, newStudent.iscurrent]
-//     );
-//     console.log(result.rows[0]);
-//     res.json(result.rows[0]);
-//   } catch (e) {
-//     console.log(e);
-//     return res.status(400).json({ e });
-//   }
-// });
+// create the POST request for individuals
+app.post("/api/individuals", async (req, res) => {
+  try {
+    const { nickname, scientist_name, species } = req.body;
+
+    const speciesResult = await db.query(
+      `SELECT id FROM species WHERE LOWER(common_name) = LOWER($1)`,
+      [species]
+    );
+
+    const species_id = speciesResult.rows[0].id;
+
+    const result = await db.query(
+      `INSERT INTO individuals(
+                            nickname,
+                            species_id,
+                            scientist_name
+                            ) VALUES($1, $2, $3) RETURNING *`,
+      [nickname, species_id, scientist_name]
+    );
+    console.log(result.rows[0]);
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ e });
+  }
+});
 
 // // delete request for students
 // app.delete("/api/students/:studentId", async (req, res) => {
