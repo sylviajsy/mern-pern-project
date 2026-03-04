@@ -151,13 +151,15 @@ const ListIndividuals = () => {
 
             {state.editingId && 
                 <div className="modal-overlay">
-                    <button 
-                        className="close-btn" 
-                        onClick={() => dispatch({ type: "CLEAR_EDITING" })}
-                    >
-                        &times;
-                    </button>
-                    <IndividualForm onAdd={onAdd}/>
+                    <div className="modal-content">
+                        <button 
+                            className="close-btn" 
+                            onClick={() => dispatch({ type: "CLEAR_EDITING" })}
+                        >
+                            &times;
+                        </button>
+                        <IndividualForm onAdd={onAdd}/>
+                    </div>    
                 </div>}
     </div>
 

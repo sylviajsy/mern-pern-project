@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
+import "../scss/IndividualForm.scss"
 
 const IndividualForm = ({ onAdd }) => {
   const [species, setSpecies] = useState([]);
@@ -42,6 +43,8 @@ const IndividualForm = ({ onAdd }) => {
   };
 
   return (
+    <div>
+    <h3> Add New Individual </h3>
     <Form
       data-testid="individualsForm"
       className="form-individuals"
@@ -88,12 +91,13 @@ const IndividualForm = ({ onAdd }) => {
           onChange={handleChange}
         />
       </Form.Group>
-      <Form.Group>
+      <Form.Group className="d-flex justify-content-center mt-3">
         <Button type="submit" variant="outline-success">
           Add
         </Button>
       </Form.Group>
     </Form>
+    </div>
   );
 };
 
