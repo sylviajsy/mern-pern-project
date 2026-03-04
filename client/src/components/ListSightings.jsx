@@ -1,10 +1,12 @@
 import { useEffect, useReducer } from "react";
 import moment from "moment";
+import SightingsForm from "./SightingsForm";
 
 const initialState = {
   sightings: [],
   loading: false,
   error: null,
+  editingId:null
 };
 
 function sightingsReducer(state, action) {
@@ -17,6 +19,23 @@ function sightingsReducer(state, action) {
 
     case "FETCH_ERROR":
       return { ...state, loading: false, error: action.payload };
+
+    case 'ADD_SIGHTINGS':
+      return { ...state, sightings: [...state.sightings, action.payload] };
+
+    // Edit mode
+    case "SET_EDITING":
+        return {
+            ...state,
+            editingId: action.payload
+        };
+
+    case "CLEAR_EDITING":
+        return {
+            ...state,
+            editingId: null
+        };
+
 
     default:
       return state;
@@ -58,6 +77,36 @@ const ListSightings = () => {
     const grouped = groupByNickname(state.sightings);
     const nicknames = Object.keys(grouped).sort();
 
+    const onAdd = async(newSightings) => {
+        try {
+            const response = await fetch("/api/sightings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newSightings),
+            });
+
+            if (response.ok){
+                const data = await response.json();
+                console.log("Add Success:", data);
+                dispatch({
+                    type: "ADD_INDIVIDUALS",
+                    payload: data
+                });
+                dispatch({
+                    type: "CLEAR_EDITING",
+                });
+            } else {
+                const errorData = await response.json(); 
+                console.error("Res not ok:", errorData); 
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
   return (
     <div>
         <h2>Sightings</h2>
@@ -92,6 +141,23 @@ const ListSightings = () => {
             </table>
         </div>
     ))}
+
+    <button onClick={() => dispatch({ type: "SET_EDITING", payload: "NEW" })}>
+            ➕ Add New Sightings
+    </button>
+
+    {state.editingId && 
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <button 
+                    className="close-btn" 
+                    onClick={() => dispatch({ type: "CLEAR_EDITING" })}
+                >
+                    &times;
+                </button>
+                <SightingsForm onAdd={onAdd}/>
+            </div>    
+        </div>}
         
     </div>
   )
