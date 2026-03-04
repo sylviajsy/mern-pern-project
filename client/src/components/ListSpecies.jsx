@@ -53,8 +53,8 @@ const ListSpecies = () => {
         console.log("species", data);
         
         dispatch({ type: "FETCH_SUCCESS", payload: data });
-      } catch (err) {
-        dispatch({ type: "FETCH_ERROR", payload: err.message });
+      } catch (error) {
+        dispatch({ type: "FETCH_ERROR", payload: error.message });
       }
   };
 

@@ -15,7 +15,7 @@ const IndividualForm = ({ onAdd }) => {
         if (!res.ok) throw new Error("Failed to fetch species");
         const data = await res.json();
         setSpecies(data);
-      } catch (e) {
+      } catch (error) {
         console.log(error);
       };
   }
