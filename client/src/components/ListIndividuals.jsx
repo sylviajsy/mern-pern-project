@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react";
 import moment from "moment";
 import IndividualForm from "./IndividualForm";
+import "../scss/ListIndividuals.scss"
 
 const initialState = {
   individuals: [],
@@ -107,8 +108,11 @@ const ListIndividuals = () => {
 
   return (
     <div className="list-individuals">
-        <h2>Individuals</h2>
-        <table>
+        <div className="header-section">
+            <h2>Individuals</h2>
+        </div>
+
+        <table className="custom-table">
             <thead>
                 <tr>
                     <th>Nickname</th>
