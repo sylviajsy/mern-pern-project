@@ -1,13 +1,13 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavBar from "./routes/Navbar";
-import ListStudents from "./components/ListStudents";
+import ListSpecies from "./components/ListSpecies";
 
 function App() {
   return (
     <div className="App">
       <MyNavBar />
-      <ListStudents />
+      <ListSpecies />
     </div>
   );
 }
