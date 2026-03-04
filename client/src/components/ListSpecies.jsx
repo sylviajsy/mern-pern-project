@@ -97,7 +97,6 @@ const ListSpecies = () => {
   return (
     <div className="mybody">
       <div className="list-students">
-        <h1>Endangered Animals</h1>
         <h2>Species</h2>
         <ul>
           {state.species.map((sp) => {
