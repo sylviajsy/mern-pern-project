@@ -36,6 +36,7 @@ const IndividualForm = ({ onAdd }) => {
         <Form.Label>Nick Name</Form.Label>
         <input
           type="text"
+          name="nickname"
           id="add-nickname"
           placeholder="Nick Name"
           required
@@ -47,6 +48,7 @@ const IndividualForm = ({ onAdd }) => {
         <Form.Label>Species</Form.Label>
         <input
           type="text"
+          name="species"
           id="add-species"
           required
           value={form.species}
@@ -57,7 +59,9 @@ const IndividualForm = ({ onAdd }) => {
         <Form.Label>Scientist Name</Form.Label>
         <input
           type="text"
+          name="scientist_name"
           id="add-scientist-name"
+          placeholder="Scientist Name"
           required
           value={form.scientist_name}
           onChange={handleChange}
