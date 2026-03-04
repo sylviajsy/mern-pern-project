@@ -108,6 +108,27 @@ app.post("/api/individuals", async (req, res) => {
   }
 });
 
+// create the POST request for sightings
+app.post("/api/sightings", async (req, res) => {
+  try {
+    const { sighting_time, individual_id, location, is_healthy, sighter_email } = req.body;
+
+    const result = await db.query(
+      `
+      INSERT INTO sightings (sighting_time, individual_id, location, is_healthy, sighter_email)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+      `,
+      [sighting_time, individual_id, location, Boolean(is_healthy), sighter_email]
+    );
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error(e);
+    res.status(400).json({ error: "Failed to create sighting", detail: e.message });
+  }
+});
+
 // // delete request for students
 // app.delete("/api/students/:studentId", async (req, res) => {
 //   try {

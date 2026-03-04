@@ -90,7 +90,7 @@ const SightingsForm = ({ onAdd }) => {
       <Form.Group>
         <Form.Label>Sighting Time</Form.Label>
         <input
-          type="text"
+          type="datetime-local"
           name="sighting_time"
           id="add-sighting_time"
           placeholder="Sighting Time"
