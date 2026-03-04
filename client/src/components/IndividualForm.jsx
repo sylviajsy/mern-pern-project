@@ -12,7 +12,7 @@ const IndividualForm = ({ onAdd }) => {
   //create functions that handle the event of the user typing into the form
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const clearForm = () => {
@@ -67,9 +67,6 @@ const IndividualForm = ({ onAdd }) => {
         <Button type="submit" variant="outline-success">
           Add
         </Button>
-          <Button type="button" variant="outline-warning" onClick={clearForm}>
-            Cancel
-          </Button>
       </Form.Group>
     </Form>
   );

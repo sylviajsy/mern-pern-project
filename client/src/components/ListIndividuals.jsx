@@ -107,45 +107,58 @@ const ListIndividuals = () => {
 
   return (
     <div className="list-individuals">
-      <h2>Individuals</h2>
-      <table>
-        <thead>
-            <tr>
-                <th>Nickname</th>
-                <th>Species</th>
-                <th>Scientist</th>
-                <th>Sightings count</th>
-                <th>First Sighting</th>
-                <th>Latest Sighting</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {state.individuals.map((ind) => (
-                <tr key={ind.id}>
-                    <td>{ind.nickname}</td>
-                    <td>{ind.species}</td>
-                    <td>{ind.scientist_name}</td>
-                    <td>{ind.sighting_count}</td>
-
-                    <td>
-                        {ind.first_sighting
-                            ? moment(ind.first_sighting).format("YYYY-MM-DD HH:mm")
-                            : "None"}
-                    </td>
-
-                    <td>
-                        {ind.latest_sighting
-                            ? moment(ind.latest_sighting).format("YYYY-MM-DD HH:mm")
-                            : "None"}
-                    </td>
-
+        <h2>Individuals</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nickname</th>
+                    <th>Species</th>
+                    <th>Scientist</th>
+                    <th>Sightings count</th>
+                    <th>First Sighting</th>
+                    <th>Latest Sighting</th>
                 </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
 
-      <IndividualForm onAdd={onAdd}/>
+            <tbody>
+                {state.individuals.map((ind) => (
+                    <tr key={ind.id}>
+                        <td>{ind.nickname}</td>
+                        <td>{ind.species}</td>
+                        <td>{ind.scientist_name}</td>
+                        <td>{ind.sighting_count}</td>
+
+                        <td>
+                            {ind.first_sighting
+                                ? moment(ind.first_sighting).format("YYYY-MM-DD HH:mm")
+                                : "None"}
+                        </td>
+
+                        <td>
+                            {ind.latest_sighting
+                                ? moment(ind.latest_sighting).format("YYYY-MM-DD HH:mm")
+                                : "None"}
+                        </td>
+
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+      
+            <button onClick={() => dispatch({ type: "SET_EDITING", payload: "NEW" })}>
+                    ➕ Add New Individual
+            </button>
+
+            {state.editingId && 
+                <div className="modal-overlay">
+                    <button 
+                        className="close-btn" 
+                        onClick={() => dispatch({ type: "CLEAR_EDITING" })}
+                    >
+                        &times;
+                    </button>
+                    <IndividualForm onAdd={onAdd}/>
+                </div>}
     </div>
 
   )
