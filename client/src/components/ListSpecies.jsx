@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react";
-import * as ioicons from "react-icons/io5";
+import moment from "moment";
 // import MyForm from "./Form";
 // import Student from "./Student";
 
@@ -96,23 +96,29 @@ const ListSpecies = () => {
 
   return (
     <div className="mybody">
-      <div className="list-students">
+      <div className="list-species">
         <h2>Species</h2>
-        <ul>
-          {state.species.map((sp) => {
-            return (
-              <li key={sp.id}>
-                <strong>{sp.common_name}</strong>
-                {sp.scientific_name ? ` (${sp.scientific_name})` : ""}
-                {" — "}
-                status: {sp.conservation_status_code}
-                {sp.estimated_wild_count !== null && sp.estimated_wild_count !== undefined
-                  ? ` — est: ${sp.estimated_wild_count}`
-                  : ""}
-              </li>
-            );
-          })}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Common Name</th>
+              <th>Scientific Name</th>
+              <th>Status</th>
+              <th>Estimated Wild Count</th>
+            </tr>
+          </thead>
+            
+            <tbody>
+              {state.species.map((sp) => (
+                <tr key={sp.id}>
+                  <td>{sp.common_name}</td>
+                  <td>{sp.scientific_name}</td>
+                  <td>{sp.conservation_status_code}</td>
+                  <td>{sp.estimated_wild_count}</td>
+                </tr>
+              ))}
+            </tbody>
+        </table>
       </div>
       {/* <MyForm
         key={editingStudent ? editingStudent.id : null}
