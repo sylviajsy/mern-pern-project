@@ -93,9 +93,6 @@ const ListSightings = () => {
         </div>
     ))}
         
-
-            
-      
     </div>
   )
 }

@@ -2,12 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 
 const IndividualForm = ({ onAdd }) => {
-
+  const [species, setSpecies] = useState([]);
   const [form, setForm] = useState({
     nickname: "",
     scientist_name: "",
-    species: "",
+    species_id: "",
   });
+
+  const loadSpecies = async () => {
+    try {
+        const res = await fetch("/api/species");
+        if (!res.ok) throw new Error("Failed to fetch species");
+        const data = await res.json();
+        setSpecies(data);
+      } catch (e) {
+        console.log(error);
+      };
+  }
+
+  useEffect(() => {
+    loadSpecies();
+  },[])
 
   //create functions that handle the event of the user typing into the form
   const handleChange = (e) => {
@@ -46,14 +61,20 @@ const IndividualForm = ({ onAdd }) => {
       </Form.Group>
       <Form.Group>
         <Form.Label>Species</Form.Label>
-        <input
-          type="text"
-          name="species"
+        <select
+          name="species_id"
           id="add-species"
           required
-          value={form.species}
+          value={form.species_id}
           onChange={handleChange}
-        />
+        >
+          <option value="">Select species</option>
+            {species.map((sp) => (
+              <option key={sp.id} value={sp.id}>
+                {sp.common_name}
+              </option>
+            ))}
+        </select>
       </Form.Group>
       <Form.Group>
         <Form.Label>Scientist Name</Form.Label>
