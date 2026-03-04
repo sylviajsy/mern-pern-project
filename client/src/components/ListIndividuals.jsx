@@ -1,10 +1,12 @@
 import { useEffect, useReducer } from "react";
 import moment from "moment";
+import IndividualForm from "./IndividualForm";
 
 const initialState = {
   individuals: [],
   loading: false,
-  error: null
+  error: null,
+  editingId:null
 };
 
 function individualReducer(state, action) {
@@ -18,6 +20,22 @@ function individualReducer(state, action) {
 
     case "FETCH_ERROR":
       return { ...state, loading: false, error: action.payload };
+
+    case 'ADD_INDIVIDUALS':
+      return { ...state, individuals: [...state.individuals, action.payload] };
+
+    // Edit mode
+    case "SET_EDITING":
+        return {
+            ...state,
+            editingId: action.payload
+        };
+
+    case "CLEAR_EDITING":
+        return {
+            ...state,
+            editingId: null
+        };
 
     default:
       return state;
@@ -58,8 +76,37 @@ const ListIndividuals = () => {
         loadIndividuals()
     },[]);
 
+    const onAdd = async(newIndividuals) => {
+        try {
+            const response = await fetch("/api/individuals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newIndividuals),
+            });
+
+            if (response.ok){
+                const data = await response.json();
+                console.log("Add Success:", data);
+                dispatch({
+                    type: "ADD_INDIVIDUALS",
+                    payload: data
+                });
+                dispatch({
+                    type: "CLEAR_EDITING",
+                });
+            } else {
+                const errorData = await response.json(); 
+                console.error("Res not ok:", errorData); 
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
   return (
-    <div>
+    <div className="list-individuals">
       <h2>Individuals</h2>
       <table>
         <thead>
@@ -83,13 +130,13 @@ const ListIndividuals = () => {
 
                     <td>
                         {ind.first_sighting
-                            ? moment(ind.first_sighting).format("YYYY-MM-DD HH:MM")
+                            ? moment(ind.first_sighting).format("YYYY-MM-DD HH:mm")
                             : "None"}
                     </td>
 
                     <td>
                         {ind.latest_sighting
-                            ? moment(ind.latest_sighting).format("YYYY-MM-DD HH:MM")
+                            ? moment(ind.latest_sighting).format("YYYY-MM-DD HH:mm")
                             : "None"}
                     </td>
 
@@ -97,7 +144,10 @@ const ListIndividuals = () => {
             ))}
         </tbody>
       </table>
+
+      <IndividualForm onAdd={onAdd}/>
     </div>
+
   )
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 
-const MyForm = ({ onSaveStudent, editingStudent, onUpdateStudent }) => {
+const IndividualForm = ({ onSaveStudent, editingStudent, onUpdateStudent }) => {
   // This is the original State with not initial student
   const [student, setStudent] = useState(
     editingStudent || {
@@ -127,4 +127,4 @@ const MyForm = ({ onSaveStudent, editingStudent, onUpdateStudent }) => {
   );
 };
 
-export default MyForm;
+export default IndividualForm;
