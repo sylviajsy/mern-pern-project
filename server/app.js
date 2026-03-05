@@ -84,7 +84,7 @@ app.post("/api/individuals", async (req, res) => {
       [nickname, species_id, scientist_name]
     );
 
-    res.json(insertResult.rows[0]);
+    res.json(insertResult.rows);
     
   } catch (e) {
     console.log(e);
@@ -112,6 +112,51 @@ app.post("/api/sightings", async (req, res) => {
     res.status(400).json({ error: "Failed to create sighting", detail: e.message });
   }
 });
+
+// Sightings Search wihtin date range
+app.get('/api/sightings', async (req, res) => {
+    try{
+        const { start, end } = req.query;
+
+        const params = [];
+        const where = [];
+
+        // start inclusive: >= start::date
+        if (start) {
+        params.push(start);
+        where.push(`s.sighting_time >= $${params.length}::date`);
+        }
+
+        // end inclusive: < (end::date + 1 day)
+        if (end) {
+        params.push(end);
+        where.push(`s.sighting_time < ($${params.length}::date + interval '1 day')`);
+        }
+
+        const result = await db.query(
+        `
+            SELECT 
+                s.id,
+                s.sighting_time,
+                s.location,
+                s.is_healthy,
+                s.sighter_email,
+                i.nickname
+            FROM sightings s
+            JOIN individuals i ON s.individual_id = i.id
+            ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
+            ORDER BY i.nickname ASC, s.sighting_time DESC
+        `,
+        params
+        );
+
+        res.json(result.rows);
+    } catch (e) {
+        console.error(e);
+        res.status(400).json({ error: "Failed to fetch sightings", detail: e.message });
+    }
+
+})
 
 // // delete request for students
 // app.delete("/api/students/:studentId", async (req, res) => {
