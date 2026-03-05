@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
+import { useData } from "../context/DataContext";
 // import "../scss/SightingsForm.scss"
 
 const SightingsForm = ({ onAdd }) => {
-  const [nickname, setNickname] = useState([]);
+  const { state, actions } = useData();
+  const { loadIndividuals, refreshAfterSightingChange } = actions;
+
   const [form, setForm] = useState({
     sighting_time: "",
     individual_id: "",
@@ -12,20 +15,9 @@ const SightingsForm = ({ onAdd }) => {
     sighter_email: "",
   });
 
-  const loadNickname = async () => {
-    try {
-        const res = await fetch("/api/individuals");
-        if (!res.ok) throw new Error("Failed to fetch nick name");
-        const data = await res.json();
-        setNickname(data);
-      } catch (error) {
-        console.log(error);
-      };
-  }
-
   useEffect(() => {
-    loadNickname();
-  },[])
+    loadIndividuals();
+  },[loadIndividuals])
 
   //create functions that handle the event of the user typing into the form
   const handleChange = (e) => {
@@ -42,10 +34,11 @@ const SightingsForm = ({ onAdd }) => {
   };
 
   //A function to handle the submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("sight form",form);
-    onAdd(form);
+    await refreshAfterSightingChange();
+    await onAdd(form);
     clearForm();
   };
 
@@ -67,7 +60,7 @@ const SightingsForm = ({ onAdd }) => {
           onChange={handleChange}
         >
           <option value="">Select Nick Name</option>
-            {nickname.map((name) => (
+            {state.individuals.map((name) => (
               <option key={name.id} value={name.id}>
                 {name.nickname}
               </option>

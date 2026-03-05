@@ -26,10 +26,9 @@ const ListIndividuals = () => {
 
             if (response.ok){
                 const data = await response.json();
-                console.log("Add Success:", data);
+                console.log("Individuals:", data);
                 await actions.loadIndividuals();
                 setModal(false);
-                // await actions.refreshAfterSightingChange();
             } else {
                 const errorData = await response.json(); 
                 console.error("Res not ok:", errorData); 
