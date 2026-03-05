@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useData } from "../context/DataContext";
 import moment from "moment";
 import SightingsForm from "./SightingsForm";
+import "../scss/ListSightings.scss"
 
 function groupByNickname(sightings) {
   return sightings.reduce((acc, s) => {
@@ -52,14 +53,14 @@ const ListSightings = () => {
 
 
   return (
-    <div>
+    <div className="list-sightings">
         <h2>Sightings</h2>
 
     {nicknames.map((name) => (
         <div key={name} style={{ marginBottom: 24 }}>
-            <h3 style={{ marginBottom: 8 }}>{name}</h3>
+            <h3 style={{ marginBottom: 8 }} className="header-section">{name}</h3>
 
-            <table>
+            <table className="custom-table">
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -84,6 +85,7 @@ const ListSightings = () => {
                 </tbody>
             </table>
         </div>
+
     ))}
 
     <button onClick={() => setModal(true)}>
