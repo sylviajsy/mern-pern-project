@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
 const db = require("./db/db-connection.js");
+const router = express.Router();
 
 const app = express();
 
@@ -83,28 +84,11 @@ app.post("/api/individuals", async (req, res) => {
       [nickname, species_id, scientist_name]
     );
 
-    const newId = insertResult.rows[0].id;
-
-    const result = await db.query(`
-      SELECT
-        i.id,
-        i.nickname,
-        i.scientist_name,
-        sp.common_name AS species,
-        COUNT(s.id) AS sighting_count,
-        MIN(s.sighting_time) AS first_sighting,
-        MAX(s.sighting_time) AS latest_sighting
-      FROM individuals i
-      JOIN species sp ON i.species_id = sp.id
-      LEFT JOIN sightings s ON s.individual_id = i.id
-      WHERE i.id = $1
-      GROUP BY i.id, sp.common_name
-    `, [newId]);
-    console.log(result.rows[0]);
-    res.json(result.rows[0]);
+    res.json(insertResult.rows[0]);
+    
   } catch (e) {
     console.log(e);
-    return res.status(400).json({ e });
+    return res.status(400).json({e});
   }
 });
 
