@@ -44,6 +44,7 @@ const SightingsForm = ({ onAdd }) => {
   //A function to handle the submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("sight form",form);
     onAdd(form);
     clearForm();
   };
