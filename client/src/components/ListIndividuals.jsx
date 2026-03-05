@@ -1,81 +1,17 @@
 import { useEffect, useReducer } from "react";
+import { useData } from "../context/DataContext";
 import moment from "moment";
 import IndividualForm from "./IndividualForm";
 import "../scss/ListIndividuals.scss"
 
-const initialState = {
-  individuals: [],
-  loading: false,
-  error: null,
-  editingId:null
-};
-
-function individualReducer(state, action) {
-  switch (action.type) {
-
-    case "FETCH_START":
-      return { ...state, loading: true, error: null };
-
-    case "FETCH_SUCCESS":
-      return { ...state, loading: false, individuals: action.payload };
-
-    case "FETCH_ERROR":
-      return { ...state, loading: false, error: action.payload };
-
-    case 'ADD_INDIVIDUALS':
-      return { ...state, individuals: [...state.individuals, action.payload] };
-
-    // Edit mode
-    case "SET_EDITING":
-        return {
-            ...state,
-            editingId: action.payload
-        };
-
-    case "CLEAR_EDITING":
-        return {
-            ...state,
-            editingId: null
-        };
-
-    default:
-      return state;
-  }
-}
-
 const ListIndividuals = () => {
-    const [state, dispatch] = useReducer(individualReducer, initialState);
+    const { state, actions } = useData();
+    const [editingId, setEditingId] = useState(null);
 
-    const loadIndividuals = async () => {
-      dispatch({ type: "FETCH_START" });
-
-      try {
-        const res = await fetch("/api/individuals");
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch individuals");
-        }
-
-        const data = await res.json();
-        console.log("individuals", data);
-
-        dispatch({
-          type: "FETCH_SUCCESS",
-          payload: data
-        });
-
-      } catch (err) {
-
-        dispatch({
-          type: "FETCH_ERROR",
-          payload: err.message
-        });
-      }
-    };
-
+    // Use Context actions to fetch
     useEffect(() => {
-        loadIndividuals()
-    },[]);
+        actions.loadIndividuals()
+    },[actions]);
 
     const onAdd = async(newIndividuals) => {
         try {
@@ -90,13 +26,8 @@ const ListIndividuals = () => {
             if (response.ok){
                 const data = await response.json();
                 console.log("Add Success:", data);
-                dispatch({
-                    type: "ADD_INDIVIDUALS",
-                    payload: data
-                });
-                dispatch({
-                    type: "CLEAR_EDITING",
-                });
+                await actions.loadIndividuals();
+                // await actions.refreshAfterSightingChange();
             } else {
                 const errorData = await response.json(); 
                 console.error("Res not ok:", errorData); 
@@ -149,7 +80,7 @@ const ListIndividuals = () => {
             </tbody>
         </table>
       
-            <button onClick={() => dispatch({ type: "SET_EDITING", payload: "NEW" })}>
+            <button onClick={() => setEditingId("NEW")}>
                     ➕ Add New Individual
             </button>
 
@@ -158,7 +89,7 @@ const ListIndividuals = () => {
                     <div className="modal-content">
                         <button 
                             className="close-btn" 
-                            onClick={() => dispatch({ type: "CLEAR_EDITING" })}
+                            onClick={() => setEditingId(null)}
                         >
                             &times;
                         </button>
