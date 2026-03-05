@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 import { useData } from "../context/DataContext";
 import moment from "moment";
 import IndividualForm from "./IndividualForm";
@@ -6,12 +6,13 @@ import "../scss/ListIndividuals.scss"
 
 const ListIndividuals = () => {
     const { state, actions } = useData();
-    const [editingId, setEditingId] = useState(null);
+    const { loadIndividuals } = actions;
+    const [modal, setModal] = useState(false);
 
     // Use Context actions to fetch
     useEffect(() => {
         actions.loadIndividuals()
-    },[actions]);
+    },[loadIndividuals]);
 
     const onAdd = async(newIndividuals) => {
         try {
@@ -27,6 +28,7 @@ const ListIndividuals = () => {
                 const data = await response.json();
                 console.log("Add Success:", data);
                 await actions.loadIndividuals();
+                setModal(false);
                 // await actions.refreshAfterSightingChange();
             } else {
                 const errorData = await response.json(); 
@@ -36,6 +38,9 @@ const ListIndividuals = () => {
             console.log(error);
         }
     }
+
+    if (state.loading.individuals) return <p>Loading individuals...</p>;
+    if (state.error.individuals) return <p style={{ color: "red" }}>{state.error.individuals}</p>;
 
   return (
     <div className="list-individuals">
@@ -80,16 +85,16 @@ const ListIndividuals = () => {
             </tbody>
         </table>
       
-            <button onClick={() => setEditingId("NEW")}>
+            <button onClick={() => setModal(true)}>
                     ➕ Add New Individual
             </button>
 
-            {state.editingId && 
+            {modal && 
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <button 
                             className="close-btn" 
-                            onClick={() => setEditingId(null)}
+                            onClick={() => setModal(false)}
                         >
                             &times;
                         </button>
