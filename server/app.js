@@ -99,6 +99,12 @@ app.post("/api/sightings", async (req, res) => {
   try {
     const { sighting_time, individual_id, location, is_healthy, sighter_email } = req.body;
 
+    if (!/\S+@\S+\.\S+/.test(sighter_email)) {
+        return res.status(400).json({
+            error: "Please enter a valid email address."
+        });
+    }
+
     const result = await db.query(
       `
       INSERT INTO sightings (sighting_time, individual_id, location, is_healthy, sighter_email)
