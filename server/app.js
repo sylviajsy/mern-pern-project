@@ -160,18 +160,18 @@ app.get('/api/sightings', async (req, res) => {
 
 })
 
-// // delete request for students
-// app.delete("/api/students/:studentId", async (req, res) => {
-//   try {
-//     const studentId = req.params.studentId;
-//     await db.query("DELETE FROM students WHERE id=$1", [studentId]);
-//     console.log("From the delete request-url", studentId);
-//     res.status(200).end();
-//   } catch (e) {
-//     console.log(e);
-//     return res.status(400).json({ e });
-//   }
-// });
+// delete request for Sightings
+app.delete("/api/sightings/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await db.query("DELETE FROM sightings WHERE id=$1", [id]);
+    console.log("From the delete request-url", id);
+    res.status(200).end();
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ e });
+  }
+});
 
 // //A put request - Update a student
 // app.put("/api/students/:studentId", async (req, res) => {
