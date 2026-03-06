@@ -51,7 +51,7 @@ const ListSightings = () => {
                 setModal(false);
             } else {
                 const errorData = await response.json(); 
-                console.error("Res not ok:", errorData); 
+                window.alert(errorData.error); 
             }
         } catch (error) {
             console.log(error);
