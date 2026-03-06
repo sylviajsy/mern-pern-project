@@ -50,25 +50,27 @@ app.get("/api/individuals", async (req, res) => {
 });
 
 // create the get request for list of all sightings
-app.get("/api/sightings", async (req, res) => {
-  try {
-    const result = await db.query(`
-      SELECT 
-        s.id, 
-        s.sighting_time, 
-        s.location, 
-        s.is_healthy, 
-        s.sighter_email, 
-        i.nickname 
-      FROM sightings s 
-      JOIN individuals i ON s.individual_id = i.id
-      ORDER BY i.nickname ASC, s.sighting_time DESC
-    `);
-    res.json(result.rows);
-  } catch (e) {
-    return res.status(400).json({ e });
-  }
-});
+// app.get("/api/sightings", async (req, res) => {
+//   try {
+//     console.log("hit /api/sightings");
+//     console.log("req.query =", req.query);
+//     const result = await db.query(`
+//       SELECT 
+//         s.id, 
+//         s.sighting_time, 
+//         s.location, 
+//         s.is_healthy, 
+//         s.sighter_email, 
+//         i.nickname 
+//       FROM sightings s 
+//       JOIN individuals i ON s.individual_id = i.id
+//       ORDER BY i.nickname ASC, s.sighting_time DESC
+//     `);
+//     res.json(result.rows);
+//   } catch (e) {
+//     return res.status(400).json({ e });
+//   }
+// });
 
 // create the POST request for individuals
 app.post("/api/individuals", async (req, res) => {
@@ -117,20 +119,20 @@ app.post("/api/sightings", async (req, res) => {
 app.get('/api/sightings', async (req, res) => {
     try{
         const { start, end } = req.query;
-
+        
         const params = [];
         const where = [];
 
         // start inclusive: >= start::date
         if (start) {
-        params.push(start);
-        where.push(`s.sighting_time >= $${params.length}::date`);
+            params.push(start);
+            where.push(`s.sighting_time >= $${params.length}::date`);
         }
 
         // end inclusive: < (end::date + 1 day)
         if (end) {
-        params.push(end);
-        where.push(`s.sighting_time < ($${params.length}::date + interval '1 day')`);
+            params.push(end);
+            where.push(`s.sighting_time < ($${params.length}::date + interval '1 day')`);
         }
 
         const result = await db.query(

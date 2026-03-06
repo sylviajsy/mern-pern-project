@@ -18,12 +18,16 @@ const ListSightings = () => {
     const { state, actions } = useData();
     const { loadSightings } = actions;
     const [modal, setModal] = useState(false);
+    const [filteredSightings, setFilteredSightings] = useState(null);
+
 
     useEffect(() => {
-        actions.loadSightings()
+        loadSightings()
     },[loadSightings]);
 
-    const grouped = groupByNickname(state.sightings);
+    const sightingsToShow = filteredSightings ?? state.sightings;
+
+    const grouped = groupByNickname(sightingsToShow);
     const nicknames = Object.keys(grouped).sort();
 
     if (state.loading.sightings) return <p>Loading sightings...</p>;
@@ -42,6 +46,8 @@ const ListSightings = () => {
             if (response.ok){
                 const data = await response.json();
                 await actions.loadSightings();
+                await actions.refreshAfterSightingChange();
+                setFilteredSightings(null);
                 setModal(false);
             } else {
                 const errorData = await response.json(); 
@@ -52,12 +58,29 @@ const ListSightings = () => {
         }
     }
 
-    const handleSearch = async () => {
+    const onSearch = async (searchParams) => {
         try {
+            console.log("searchParams:", searchParams);
+            const response = await fetch(`/api/sightings?${searchParams}`);
 
-        }
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Search data', data)
+                if (data.length === 0) {
+                    window.alert("No sightings found matching your criteria. Showing all sightings instead.");
+                    setFilteredSightings(null);
+                    await loadSightings();
+                    return;
+                }
+                   setFilteredSightings(data); 
+                } else {
+                    const errorData = await response.json();
+                    window.alert(errorData.error);
+                }
+            } catch (error) {
+                console.log("Search failed:", error);
+            }
     }
-
 
   return (
     <div>
@@ -81,6 +104,7 @@ const ListSightings = () => {
 
                     <tbody>
                         {grouped[name]
+                            .slice()
                             .sort((a, b) => new Date(b.sighting_time) - new Date(a.sighting_time))
                             .map((s) => (
                                 <tr key={s.id}>
