@@ -1,4 +1,5 @@
 import React from 'react'
+import "../scss/IndividualDetailModal.scss"
 
 const IndividualDetailModal = ({ individual }) => {
     console.log("Current individual object:", individual);
