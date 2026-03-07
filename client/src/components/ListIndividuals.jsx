@@ -8,6 +8,8 @@ const ListIndividuals = () => {
     const { state, actions } = useData();
     const { loadIndividuals } = actions;
     const [modal, setModal] = useState(false);
+    const [individuals, setIndividuals] = useState(null);
+    const [details, setDetails] = useState(false);
 
     // Use Context actions to fetch
     useEffect(() => {
@@ -38,6 +40,24 @@ const ListIndividuals = () => {
         }
     }
 
+    // View Details Page
+    const handleDetails = async (id) => {
+        try{
+            const response = await fetch(`/api/individuals/${id}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                window.alert(data.error || "Failed to fetch details");
+                return;
+            }
+
+            setSelectedIndividual(data);
+            setDetailModal(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     if (state.loading.individuals) return <p>Loading individuals...</p>;
     if (state.error.individuals) return <p style={{ color: "red" }}>{state.error.individuals}</p>;
 
@@ -62,7 +82,13 @@ const ListIndividuals = () => {
             <tbody>
                 {state.individuals.map((ind) => (
                     <tr key={ind.id}>
-                        <td>{ind.nickname}</td>
+                        <td>
+                            <button
+                                onClick={() => handleDetails(ind.id)}
+                            >
+                                {ind.nickname}
+                            </button>
+                        </td>
                         <td>{ind.species}</td>
                         <td>{ind.scientist_name}</td>
                         <td>{ind.sighting_count}</td>

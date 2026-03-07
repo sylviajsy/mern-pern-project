@@ -204,7 +204,7 @@ app.get("/api/individuals/:id", async (req, res) => {
             i.nickname,
             i.wikipedia_url,
             i.photo_url,
-            sp.common_name AS species,
+            sp.common_name AS species
         FROM individuals i
         JOIN species sp ON i.species_id = sp.id
         WHERE i.id = $1
