@@ -207,9 +207,7 @@ app.get("/api/individuals/:id", async (req, res) => {
             sp.common_name AS species,
         FROM individuals i
         JOIN species sp ON i.species_id = sp.id
-        LEFT JOIN sightings s ON s.individual_id = i.id
         WHERE i.id = $1
-        GROUP BY i.id, sp.common_name, sp.scientific_name
       `,
       [id]
     );
