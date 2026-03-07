@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useData } from "../context/DataContext";
 import moment from "moment";
 import IndividualForm from "./IndividualForm";
+import IndividualDetailModal from "./IndividualDetailModal";
 import "../scss/ListIndividuals.scss"
 
 const ListIndividuals = () => {
     const { state, actions } = useData();
     const { loadIndividuals } = actions;
     const [modal, setModal] = useState(false);
-    const [individuals, setIndividuals] = useState(null);
-    const [details, setDetails] = useState(false);
+    const [selectedIndividuals, setSelectedIndividuals] = useState(null);
+    const [detailModal, setDetailModal] = useState(false);
 
     // Use Context actions to fetch
     useEffect(() => {
@@ -51,7 +52,7 @@ const ListIndividuals = () => {
                 return;
             }
 
-            setSelectedIndividual(data);
+            setSelectedIndividuals(data);
             setDetailModal(true);
         } catch (error) {
             console.log(error);
@@ -125,6 +126,19 @@ const ListIndividuals = () => {
                         </button>
                         <IndividualForm onAdd={onAdd}/>
                     </div>    
+                </div>}
+
+            {detailModal &&
+                <div className="modal-overlay">
+                    <div className="modal-content individual-detail-modal">
+                        <button 
+                            className="close-btn" 
+                            onClick={() => setDetailModal(false)}
+                        >
+                            &times;
+                        </button>
+                        <IndividualDetailModal individual={selectedIndividuals}/>
+                    </div>
                 </div>}
     </div>
 
