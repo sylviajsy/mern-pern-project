@@ -192,6 +192,39 @@ app.delete("/api/individuals/:id", async (req, res) => {
   }
 });
 
+// Wiki Link and Photo URL
+app.get("/api/individuals/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await db.query(
+      `
+        SELECT
+            i.id,
+            i.nickname,
+            i.wikipedia_url,
+            i.photo_url,
+            sp.common_name AS species,
+        FROM individuals i
+        JOIN species sp ON i.species_id = sp.id
+        LEFT JOIN sightings s ON s.individual_id = i.id
+        WHERE i.id = $1
+        GROUP BY i.id, sp.common_name, sp.scientific_name
+      `,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Individual not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Failed to fetch individual details" });
+  }
+});
+
 // //A put request - Update a student
 // app.put("/api/students/:studentId", async (req, res) => {
 //   //console.log(req.params);
