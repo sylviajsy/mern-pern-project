@@ -39,7 +39,8 @@ app.get("/api/individuals", async (req, res) => {
         MAX(s.sighting_time) AS latest_sighting
       FROM individuals i
       JOIN species sp ON i.species_id = sp.id
-      LEFT JOIN sightings s ON s.individual_id = i.id
+      LEFT JOIN sighting_individuals si ON si.individual_id = i.id
+      LEFT JOIN sightings s ON s.id = si.sighting_id
       GROUP BY i.id, sp.common_name
       ORDER BY i.id;
     `);
@@ -151,8 +152,8 @@ app.get('/api/sightings', async (req, res) => {
                 s.sighter_email,
                 i.nickname
             FROM sightings s
-            JOIN individuals i ON s.individual_id = i.id
             JOIN sighting_individuals si ON s.id = si.sighting_id
+            JOIN individuals i ON si.individual_id = i.id
             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
             ORDER BY i.nickname ASC, s.sighting_time DESC
         `,
@@ -255,9 +256,10 @@ app.post('/api/sightings/group', async (req, res) => {
     
     try {
         // Use Transaction to make sure both success, otherwise both fail
-        await db.query('BEGIN');
+        const client = await db.connect();
+        await client.query('BEGIN');
 
-        const sightingRes = await db.query(
+        const sightingRes = await client.query(
             `INSERT INTO sightings (sighting_time, location, is_healthy, sighter_email) 
              VALUES ($1, $2, $3, $4) RETURNING id`,
             [sighting_time, location, is_healthy, sighter_email]
@@ -265,14 +267,16 @@ app.post('/api/sightings/group', async (req, res) => {
         const newSightingId = sightingRes.rows[0].id;
 
         const insertPromises = individual_ids.map(indId => {
-            return db.query(
+            return client.query(
                 'INSERT INTO sighting_individuals (sighting_id, individual_id) VALUES ($1, $2)',
                 [newSightingId, indId]
             );
         });
+
+
         await Promise.all(insertPromises);
 
-        await db.query('COMMIT');
+        await client.query('COMMIT');
         res.status(201).json({ message: "Group sighting recorded", id: newSightingId, individual_ids });
     } catch (error) {
         await db.query('ROLLBACK');

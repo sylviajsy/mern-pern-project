@@ -35,7 +35,7 @@ const ListSightings = () => {
 
     const onAdd = async(newSightings) => {
         try {
-            const response = await fetch("/api/sightings", {
+            const response = await fetch("/api/sightings/group", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -45,7 +45,6 @@ const ListSightings = () => {
 
             if (response.ok){
                 const data = await response.json();
-                await actions.loadSightings();
                 await actions.refreshAfterSightingChange();
                 setFilteredSightings(null);
                 setModal(false);
