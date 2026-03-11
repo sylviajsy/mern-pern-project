@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
 import { useData } from "../context/DataContext";
 // import "../scss/SightingsForm.scss"
 
@@ -9,7 +9,7 @@ const SightingsForm = ({ onAdd }) => {
 
   const [form, setForm] = useState({
     sighting_time: "",
-    individual_id: "",
+    individual_ids: [],
     location: "",
     is_healthy: false,
     sighter_email: "",
@@ -21,13 +21,40 @@ const SightingsForm = ({ onAdd }) => {
 
   //create functions that handle the event of the user typing into the form
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+
+    setForm((prev) => {
+      // group sightings checkboxes
+      if (type === "checkbox" && name === "individual_ids") {
+        const id = Number(value);
+
+        return {
+          ...prev,
+          individual_ids: checked
+            ? [...prev.individual_ids, id]
+            : prev.individual_ids.filter((i) => i !== id),
+        };
+      }
+
+      // normal boolean checkbox
+      if (type === "checkbox") {
+        return {
+          ...prev,
+          [name]: checked,
+        };
+      }
+
+      // normal input
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const clearForm = () => {
     setForm({ sighting_time: "",
-    individual_id: "",
+    individual_ids: "",
     location: "",
     is_healthy: true,
     sighter_email: "", });
@@ -52,20 +79,18 @@ const SightingsForm = ({ onAdd }) => {
     >
       <Form.Group>
         <Form.Label>Nick Name</Form.Label>
-        <select
-          name="individual_id"
-          id="add-individual_id"
-          required
-          value={form.individual_id}
-          onChange={handleChange}
-        >
-          <option value="">Select Nick Name</option>
-            {state.individuals.map((name) => (
-              <option key={name.id} value={name.id}>
-                {name.nickname}
-              </option>
+            {state.individuals.map((ind) => (
+              <label key={ind.id}>
+                <input
+                  type="checkbox"
+                  name="individual_ids"
+                  value={ind.id}
+                  checked={form.individual_ids.includes(ind.id)}
+                  onChange={handleChange}
+                />
+                {ind.nickname}
+              </label>
             ))}
-        </select>
       </Form.Group>
 
       <Form.Group>
