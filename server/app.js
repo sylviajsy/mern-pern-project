@@ -223,6 +223,37 @@ app.get("/api/individuals/:id", async (req, res) => {
   }
 });
 
+// Group Sightings
+app.post('/api/sightings/group', async (req, res) => {
+    const { sighting_time, location, is_healthy, sighter_email, individual_ids } = req.body;
+    
+    try {
+        // Use Transaction to make sure both success, otherwise both fail
+        await db.query('BEGIN');
+
+        const sightingRes = await db.query(
+            `INSERT INTO sightings (sighting_time, location, is_healthy, sighter_email) 
+             VALUES ($1, $2, $3, $4) RETURNING id`,
+            [sighting_time, location, is_healthy, sighter_email]
+        );
+        const newSightingId = sightingRes.rows[0].id;
+
+        const insertPromises = individual_ids.map(indId => {
+            return db.query(
+                'INSERT INTO sighting_individuals (sighting_id, individual_id) VALUES ($1, $2)',
+                [newSightingId, indId]
+            );
+        });
+        await Promise.all(insertPromises);
+
+        await db.query('COMMIT');
+        res.status(201).json({ message: "Group sighting recorded", id: newSightingId, individual_ids });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // //A put request - Update a student
 // app.put("/api/students/:studentId", async (req, res) => {
 //   //console.log(req.params);
