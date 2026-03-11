@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import moment from "moment";
-// import MyForm from "./Form";
+import "../scss/ListSpecies.scss"
 
 const initialState = {
   species: [],
@@ -94,10 +94,10 @@ const ListSpecies = () => {
   // };
 
   return (
-    <div className="mybody">
+    <div>
       <div className="list-species">
-        <h2>Species</h2>
-        <table>
+        <h2 className="header-section">Species</h2>
+        <table className="custom-table">
           <thead>
             <tr>
               <th>Common Name</th>
