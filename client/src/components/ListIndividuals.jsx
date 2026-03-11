@@ -110,7 +110,7 @@ const ListIndividuals = () => {
                 ))}
             </tbody>
         </table>
-      
+                
             <button onClick={() => setModal(true)}>
                     ➕ Add New Individual
             </button>

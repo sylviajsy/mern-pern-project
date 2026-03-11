@@ -272,8 +272,6 @@ app.post('/api/sightings/group', async (req, res) => {
                 [newSightingId, indId]
             );
         });
-
-
         await Promise.all(insertPromises);
 
         await client.query('COMMIT');

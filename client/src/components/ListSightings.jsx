@@ -19,11 +19,27 @@ const ListSightings = () => {
     const { loadSightings } = actions;
     const [modal, setModal] = useState(false);
     const [filteredSightings, setFilteredSightings] = useState(null);
-
+    const [groupSightings, setGroupSightings] = useState([]);
 
     useEffect(() => {
         loadSightings()
     },[loadSightings]);
+
+    const loadGroupSightings = async () => {
+        try {
+            const response = await fetch("/api/sightings/group");
+
+            const data = await response.json();
+            console.log('GroupSightings',data);
+            setGroupSightings(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        loadGroupSightings();
+    }, []);
 
     const sightingsToShow = filteredSightings ?? state.sightings;
 
@@ -117,7 +133,6 @@ const ListSightings = () => {
                     </tbody>
                 </table>
             </div>
-
         ))}
 
         <button onClick={() => setModal(true)}>
@@ -135,8 +150,36 @@ const ListSightings = () => {
                     </button>
                     <SightingsForm onAdd={onAdd}/>
                 </div>    
-            </div>}
-            
+            </div>
+        }
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+            <h3 style={{ marginBottom: 8 }} className="header-section">Group Sightings</h3>
+
+            <table className="custom-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Animals</th>
+                        <th>Healthy</th>
+                        <th>Sighter Email</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {groupSightings.map((s) => (
+                            <tr key={s.id}>
+                                <td>{moment(s.sighting_time).format("YYYY-MM-DD HH:mm")}</td>
+                                <td>{s.location}</td>
+                                <td>{(s.individuals || []).join(", ")}</td>
+                                <td>{s.is_healthy ? "Yes" : "No"}</td>
+                                <td>{s.sighter_email}</td>
+                            </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     </div>
   )
