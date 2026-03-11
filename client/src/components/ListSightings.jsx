@@ -3,6 +3,7 @@ import { useData } from "../context/DataContext";
 import moment from "moment";
 import SightingsForm from "./SightingsForm";
 import "../scss/ListSightings.scss"
+import "../scss/SightingsGroup.scss"
 import SearchBar from "./SearchBar";
 
 function groupByNickname(sightings) {
@@ -154,8 +155,8 @@ const ListSightings = () => {
         }
         </div>
 
-        <div style={{ marginBottom: 24 }}>
-            <h3 style={{ marginBottom: 8 }} className="header-section">Group Sightings</h3>
+        <div className="group-sightings">
+            <h2 className="header-section">Group Sightings</h2>
 
             <table className="custom-table">
                 <thead>
