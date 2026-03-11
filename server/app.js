@@ -152,6 +152,7 @@ app.get('/api/sightings', async (req, res) => {
                 i.nickname
             FROM sightings s
             JOIN individuals i ON s.individual_id = i.id
+            JOIN sighting_individuals si ON s.id = si.sighting_id
             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
             ORDER BY i.nickname ASC, s.sighting_time DESC
         `,
@@ -223,7 +224,32 @@ app.get("/api/individuals/:id", async (req, res) => {
   }
 });
 
-// Group Sightings
+// Get Group Sightings
+app.get('/api/sightings/group', async (req, res) => {
+    try {
+        const result = await db.query(`
+        SELECT
+            s.id,
+            s.sighting_time,
+            s.location,
+            s.is_healthy,
+            s.sighter_email,
+            ARRAY_AGG(i.nickname ORDER BY i.nickname) AS individuals
+        FROM sightings s
+        JOIN sighting_individuals si ON s.id = si.sighting_id
+        JOIN individuals i ON si.individual_id = i.id
+        GROUP BY s.id
+        HAVING COUNT(si.individual_id) > 1
+        ORDER BY s.sighting_time DESC;
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch group sightings" });
+    }
+})
+
+// Add Group Sightings
 app.post('/api/sightings/group', async (req, res) => {
     const { sighting_time, location, is_healthy, sighter_email, individual_ids } = req.body;
     
