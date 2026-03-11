@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { useData } from "../context/DataContext";
-// import "../scss/SightingsForm.scss"
 
 const SightingsForm = ({ onAdd }) => {
   const { state, actions } = useData();

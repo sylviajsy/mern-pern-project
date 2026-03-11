@@ -11,7 +11,6 @@ function App() {
     <DataProvider>
       <div className="App">
         <MyNavBar />
-        <h1>Endangered Species Tracker</h1>
         <ListSpecies />
         <ListIndividuals />
         <ListSightings />

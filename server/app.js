@@ -282,37 +282,4 @@ app.post('/api/sightings/group', async (req, res) => {
     }
 });
 
-// //A put request - Update a student
-// app.put("/api/students/:studentId", async (req, res) => {
-//   //console.log(req.params);
-//   //This will be the id that I want to find in the DB - the student to be updated
-//   const studentId = req.params.studentId;
-//   const updatedStudent = {
-//     id: req.body.id,
-//     firstname: req.body.firstname,
-//     lastname: req.body.lastname,
-//     iscurrent: req.body.is_current
-//   };
-//   console.log("In the server from the url - the student id", studentId);
-//   console.log(
-//     "In the server, from the react - the student to be edited",
-//     updatedStudent
-//   );
-//   // UPDATE students SET lastname = "something" WHERE id="16";
-//   const query = `UPDATE students SET firstname=$1, lastname=$2, is_current=$3 WHERE id=${studentId} RETURNING *`;
-//   const values = [
-//     updatedStudent.firstname,
-//     updatedStudent.lastname,
-//     updatedStudent.iscurrent
-//   ];
-//   try {
-//     const updated = await db.query(query, values);
-//     console.log(updated.rows[0]);
-//     res.send(updated.rows[0]);
-//   } catch (e) {
-//     console.log(e);
-//     return res.status(400).json({ e });
-//   }
-// });
-
 module.exports = app;

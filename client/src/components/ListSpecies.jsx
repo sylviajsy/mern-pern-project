@@ -38,9 +38,6 @@ function speciesReducer(state, action) {
 const ListSpecies = () => {
   const [state, dispatch] = useReducer(speciesReducer, initialState);
 
-  //this is the state needed for the UpdateRequest
-  // const [editingStudent, setEditingStudent] = useState(null);
-
   const loadSpecies = async () => {
     dispatch({ type: "FETCH_START" });
 
@@ -61,37 +58,6 @@ const ListSpecies = () => {
   useEffect(() => {
     loadSpecies();
   }, []);
-
-  // const onSaveStudent = (newStudent) => {
-  //   //console.log(newStudent, "From the parent - List of Students");
-  //   setStudents((students) => [...students, newStudent]);
-  // };
-
-  // //A function to control the update in the parent (student component)
-  // const updateStudent = (savedStudent) => {
-  //   // console.log("Line 29 savedStudent", savedStudent);
-  //   // This function should update the whole list of students -
-  //   loadStudents();
-  // };
-
-  // //A function to handle the Delete functionality
-  // const onDelete = (student) => {
-  //   //console.log(student, "delete method")
-  //   return fetch(`http://localhost:8080/api/students/${student.id}`, {
-  //     method: "DELETE"
-  //   }).then((response) => {
-  //     //console.log(response);
-  //     if (response.ok) {
-  //       loadStudents();
-  //     }
-  //   });
-  // };
-
-  // //A function to handle the Update functionality
-  // const onUpdate = (toUpdateStudent) => {
-  //   //console.log(toUpdateStudent);
-  //   setEditingStudent(toUpdateStudent);
-  // };
 
   return (
     <div>
@@ -119,12 +85,6 @@ const ListSpecies = () => {
             </tbody>
         </table>
       </div>
-      {/* <MyForm
-        key={editingStudent ? editingStudent.id : null}
-        onSaveStudent={onSaveStudent}
-        editingStudent={editingStudent}
-        onUpdateStudent={updateStudent}
-      /> */}
     </div>
   );
 };
