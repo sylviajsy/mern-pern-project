@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict EaU8MbMWJEFmZ9B5AvmBSU8EfjXVYQY2FQiV0tzjX2mXEVHFr5kb7DJKqw4qIYP
+\restrict eVlgBmLFmReqJUjgJqq6wkCU4iqXMXRZRWvYQ00n8qFI4m62qAIMeRIba5Ji3Sm
 
 -- Dumped from database version 14.19 (Homebrew)
 -- Dumped by pg_dump version 14.19 (Homebrew)
@@ -208,10 +208,10 @@ ALTER TABLE ONLY public.species ALTER COLUMN id SET DEFAULT nextval('public.spec
 COPY public.individuals (id, nickname, species_id, scientist_name, created_at, wikipedia_url, photo_url) FROM stdin;
 1	Prickly Petunia	1	Dr. Smith	2026-03-03 13:54:22.818499	\N	\N
 2	Tony	1	Dr. Jones	2026-03-03 13:54:22.818499	\N	\N
-3	Simba	2	Dr. Mufasa	2026-03-03 13:54:22.818499	\N	\N
 4	Nala	2	Dr. Mufasa	2026-03-03 13:54:22.818499	\N	\N
 6	Mei Xiang	3	Dr. Li	2026-03-03 13:54:22.818499	\N	\N
 5	Bao Bao	3	Dr. Li	2026-03-03 13:54:22.818499	https://en.wikipedia.org/wiki/Giant_panda	https://upload.wikimedia.org/wikipedia/commons/0/0f/Grosser_Panda.JPG
+3	Simba	2	Dr. Mufasa	2026-03-03 13:54:22.818499	https://en.wikipedia.org/wiki/Lion	https://upload.wikimedia.org/lion.jpg
 \.
 
 
@@ -371,5 +371,5 @@ ALTER TABLE ONLY public.sightings
 -- PostgreSQL database dump complete
 --
 
-\unrestrict EaU8MbMWJEFmZ9B5AvmBSU8EfjXVYQY2FQiV0tzjX2mXEVHFr5kb7DJKqw4qIYP
+\unrestrict eVlgBmLFmReqJUjgJqq6wkCU4iqXMXRZRWvYQ00n8qFI4m62qAIMeRIba5Ji3Sm
 
