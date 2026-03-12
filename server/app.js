@@ -36,7 +36,8 @@ app.get("/api/individuals", async (req, res) => {
         sp.common_name AS species,
         COUNT(s.id) AS sighting_count,
         MIN(s.sighting_time) AS first_sighting,
-        MAX(s.sighting_time) AS latest_sighting
+        MAX(s.sighting_time) AS latest_sighting,
+        i.created_at
       FROM individuals i
       JOIN species sp ON i.species_id = sp.id
       LEFT JOIN sighting_individuals si ON si.individual_id = i.id
@@ -150,7 +151,8 @@ app.get('/api/sightings', async (req, res) => {
                 s.location,
                 s.is_healthy,
                 s.sighter_email,
-                i.nickname
+                i.nickname,
+                s.created_at
             FROM sightings s
             JOIN sighting_individuals si ON s.id = si.sighting_id
             JOIN individuals i ON si.individual_id = i.id
@@ -235,7 +237,8 @@ app.get('/api/sightings/group', async (req, res) => {
             s.location,
             s.is_healthy,
             s.sighter_email,
-            ARRAY_AGG(i.nickname ORDER BY i.nickname) AS individuals
+            ARRAY_AGG(i.nickname ORDER BY i.nickname) AS individuals,
+            s.created_at
         FROM sightings s
         JOIN sighting_individuals si ON s.id = si.sighting_id
         JOIN individuals i ON si.individual_id = i.id
