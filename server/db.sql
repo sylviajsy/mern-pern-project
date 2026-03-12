@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict eRoJiAks8aevj5GdKRaKeaOOro2OpHaKsBFJtHeloVR2t4wi47s2ifaAHTjfXxO
+\restrict EaU8MbMWJEFmZ9B5AvmBSU8EfjXVYQY2FQiV0tzjX2mXEVHFr5kb7DJKqw4qIYP
 
 -- Dumped from database version 14.19 (Homebrew)
 -- Dumped by pg_dump version 14.19 (Homebrew)
@@ -371,5 +371,5 @@ ALTER TABLE ONLY public.sightings
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eRoJiAks8aevj5GdKRaKeaOOro2OpHaKsBFJtHeloVR2t4wi47s2ifaAHTjfXxO
+\unrestrict EaU8MbMWJEFmZ9B5AvmBSU8EfjXVYQY2FQiV0tzjX2mXEVHFr5kb7DJKqw4qIYP
 
