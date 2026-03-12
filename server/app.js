@@ -285,4 +285,44 @@ app.post('/api/sightings/group', async (req, res) => {
     }
 });
 
+// Update individuals
+app.put("/api/individuals/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      nickname,
+      scientist_name,
+      species_id,
+      wikipedia_url,
+      photo_url,
+    } = req.body;
+
+    const result = await db.query(
+      `
+      UPDATE individuals
+      SET
+        nickname = $1,
+        scientist_name = $2,
+        species_id = $3,
+        wikipedia_url = $4,
+        photo_url = $5
+      WHERE id = $6
+      RETURNING *;
+      `,
+      [nickname, scientist_name, species_id, wikipedia_url || null, photo_url || null, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: "Individual not found.",
+      });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = app;
