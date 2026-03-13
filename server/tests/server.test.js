@@ -65,4 +65,51 @@ describe('Backend route handler unit tests', () => {
         },
         ]);
     })
+
+    test("PUT /api/individuals/:id - updates an individual", async () => {
+        db.query.mockResolvedValueOnce({
+            rows: [
+                {
+                id: 1,
+                nickname: "Leo",
+                scientist_name: "Dr. Jones",
+                species_id: 3,
+                wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+                photo_url: "https://example.com/lion.jpg",
+                },
+            ],
+        });
+
+        const handler = getHandler(app, "put", "/api/individuals/:id");
+        const req = mockReq({
+            params: { id: "1" },
+            body: {
+                nickname: "Leo",
+                scientist_name: "Dr. Jones",
+                species_id: 3,
+                wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+                photo_url: "https://example.com/lion.jpg",
+            },
+        });
+        const res = mockRes();
+
+        await handler(req, res);
+
+        const [sql, values] = db.query.mock.calls[0];
+        expect(sql).toMatch(/UPDATE individuals/i);
+        expect(values[0]).toBe("Leo");
+        expect(values[1]).toBe("Dr. Jones");
+        expect(values[2]).toBe(3);
+        expect(values[5]).toBe("1");
+
+        expect(res.json).toHaveBeenCalledWith({
+            id: 1,
+            nickname: "Leo",
+            scientist_name: "Dr. Jones",
+            species_id: 3,
+            wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+            photo_url: "https://example.com/lion.jpg",
+        });
+    });
+
 })
