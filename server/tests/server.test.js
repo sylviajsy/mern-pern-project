@@ -11,6 +11,7 @@ function mockRes() {
   res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   res.send = jest.fn().mockReturnValue(res);
+  res.end = jest.fn().mockReturnValue(res);
   return res;
 }
 
@@ -111,4 +112,37 @@ describe('Backend route handler unit tests', () => {
             photo_url: "https://example.com/lion.jpg",
         });
     });
+
+    test('DELETE /api/sightings/:id -> deletes a sighting', async () => {
+        db.query.mockResolvedValueOnce({
+            rows: [
+                {
+                    id: 20,
+                    sighting_time: "2026-03-11T03:02:00.000Z",
+                    location: "SiChuan Wolong Reserve",
+                    is_healthy: true,
+                    sighter_email: "group@test.com",
+                    individuals: ["Bao Bao", "Mei Xiang"],
+                },
+            ]
+        });
+
+        const handler = getHandler(app, "delete", "/api/sightings/:id");
+
+        const req = mockReq({
+            params: { id: "20" }
+        });
+
+        const res = mockRes();
+
+        await handler(req, res);
+
+        const [sql, values] = db.query.mock.calls[0];
+
+        expect(sql).toMatch(/DELETE FROM sightings/i);
+        expect(values).toEqual(["20"]);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.end).toHaveBeenCalled();
+    })
 })
