@@ -29,6 +29,24 @@ The application allows users to record animals being observed in the wild, manag
 
 ![Image](https://github.com/user-attachments/assets/f6495a1f-62bd-4ed5-b0c5-8bf078d74033)
 
+## CRUD Operations
+**Create**
+- add individual
+- add (group) sighting
+
+**Read**
+- list species
+- list individuals
+- list sightings
+- view individual details
+
+**Update**
+- update individuals (on Postman)
+
+**Delete**
+- delete individuals
+- delete sightings
+
 ## Technologies Used
 **Frontend**
 - React
