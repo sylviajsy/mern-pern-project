@@ -1,3 +1,50 @@
+## Endangered Species Tracker
+
+## Project Objective
+The goal of this project is to build a full-stack web application that helps researchers track sightings of endangered species.
+The application allows users to record animals being observed in the wild, manage individual animals and species, and analyze sightings over time.
+
+## Features
+1. Species Management
+- View a list of tracked species
+- Store scientific and common names for each species
+
+2. Individual Animal Tracking
+- Add and manage individual animals belonging to a species
+- View statistics about sightings for each individual
+- View detailed information about an individual, including:
+  - Wikipedia link
+  - representative photo
+
+3. Sightings Tracking
+- Record when and where an animal was observed
+- Store the observer’s email and health condition of the animal
+- Display sightings grouped by individual animals
+
+4. Search Functionality
+- Search sightings within a date range
+
+5. User Feedback
+- Toast notifications
+
+## Technologies Used
+**Frontend**
+- React
+- React Context API for state management
+- React Toastify for user notifications
+- SCSS / CSS for styling
+
+**Backend**
+- Node.js
+- Express.js
+- REST API architecture
+
+**Database**
+- PostgreSQL
+- SQL joins and aggregations
+- Junction table for many-to-many relationships
+- pg Node driver
+
 ## How to test
 1. Clone the repository: `git clone https://github.com/sylviajsy/mern-pern-project.git`
 2. Set Up the Backend
@@ -17,3 +64,8 @@ Here is what your `.env` might look like:
 8. If you want to run both servers using concurrently (which is already a npm dependency on the server) you can keep the script in the package.json in the server that reads `"dev": " concurrently 'npm start' 'cd .. && cd client && npm run dev' "`. If you run the command `npm run dev` from within your server, both the client and backend servers will start.
 9. Go to `http://localhost:5173/` and you should see something like this 💪
 <img width="1335" height="646" alt="Screenshot 2026-03-11 at 4 34 11 PM" src="https://github.com/user-attachments/assets/b3994b8d-92a9-4b0b-9aa9-b6e8e6ddd2e7" />
+
+## Nice-to-Have
+- Map Integration: Display sightings on a map using tools such as GoogleMap API
+- Photo Uploads: Allow users to upload photos of sightings instead of only storing URLs.
+- Data Visualization: 
