@@ -89,23 +89,57 @@ describe('ListSightings API Integration test', () => {
 
     test('POST /api/sightings/group - user can add a group sighting', async () => {
       const user = userEvent.setup();
-      // 1) initial GET /api/sightings
-      mockFetchJsonOnce([]);
 
-      // 2) initial GET /api/sightings/group
-      mockFetchJsonOnce([]);
+      global.fetch = vi.fn().mockImplementation((url, options) => {
+        // 1. POST /api/sightings/group
+        if (url.includes("/api/sightings/group") && options?.method === "POST") {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ id: 20, message: "Success" }),
+          });
+        }
+
+        // 2. GET /api/individuals
+        if (url.includes("/api/individuals") && !options?.method) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{ id: 5, nickname: "Bao Bao" }, { id: 6, nickname: "Mei Xiang" }]),
+          });
+        }
+
+        // 3. GET /api/sightings/group
+        if (url.includes("/api/sightings/group") && !options?.method) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+              {
+                id: 20,
+                sighting_time: "2026-03-11T03:02:00.000Z",
+                location: "SiChuan Wolong Reserve",
+                is_healthy: true,
+                sighter_email: "group@test.com",
+                individuals: ["Bao Bao", "Mei Xiang"],
+              }
+            ]),
+          });
+        }
+
+        // 4. GET /api/sightings
+        if (url.includes("/api/sightings") && !url.includes("/api/sightings/group") && !options?.method) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([]),
+          });
+        }
+
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+      });
 
       render(
         <DataProvider>
           <ListSightings />
         </DataProvider>
       );
-
-      // Fetch Individual table
-      mockFetchJsonOnce([
-        { id: 5, nickname: "Bao Bao" },
-        { id: 6, nickname: "Mei Xiang" },
-      ]);
 
       // Open modal
       const addBtn = await screen.findByText(/add new sightings/i);
@@ -116,39 +150,38 @@ describe('ListSightings API Integration test', () => {
       await user.type(screen.getByPlaceholderText(/sighting time/i), "2026-03-11T03:02");
       await user.type(screen.getByPlaceholderText(/location/i), "SiChuan Wolong Reserve");
       await user.type(screen.getByPlaceholderText(/sighter email/i), "group@test.com");
-      await user.click(screen.getByPlaceholderText(/healthy/i));
+      await user.click(document.getElementById('add-is_healthy'));
 
-      // 3) POST
-      mockFetchJsonOnce({ id: 20, success: true });
-
-      // 4) refreshAfterSightingChange()
-      mockFetchJsonOnce([]);
-      mockFetchJsonOnce([]);
-      
-      // 5) POST /api/sightings/group
-      mockFetchJsonOnce([
-        {
-          id: 20,
-          sighting_time: "2026-03-11T03:02:00.000Z",
-          location: "SiChuan Wolong Reserve",
-          is_healthy: true,
-          sighter_email: "group@test.com",
-          individuals: [5, 6],
-        },
-      ]);
-
-      const submitBtn = screen.getByRole('button', { name: /add/i });
+      const submitBtn = await screen.findByRole('button', { name: /add$/i });
       await user.click(submitBtn);
 
-      await waitFor(() => expect(globalThis.fetch).toHaveBeenCalledTimes(3));
+      // assert POST happened
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled());
 
-      const [url, options] = globalThis.fetch.mock.calls[2];
+      const postCall = globalThis.fetch.mock.calls.find(
+        ([url, options]) =>
+          String(url).includes("/api/sightings/group") &&
+          options?.method === "POST"
+      );
+
+      expect(postCall).toBeTruthy();
+
+      const [url, options] = postCall;
       expect(url).toContain("/api/sightings/group");
       expect(options.method).toBe("POST");
-      expect(options.headers).toEqual(expect.objectContaining({ "Content-Type": "application/json" }));
+      expect(options.headers).toEqual(
+        expect.objectContaining({ "Content-Type": "application/json" })
+      );
 
       const body = JSON.parse(options.body);
       expect(body.location).toBe("SiChuan Wolong Reserve");
+      expect(body.sighter_email).toBe("group@test.com");
       expect(String(body.sighting_time)).toContain("2026-03-11T03:02");
+      expect(body.individual_ids).toEqual(expect.arrayContaining([5, 6]));
+
+      // assert refreshed group table shows new row
+      expect(await screen.findByText(/Bao Bao/i)).toBeInTheDocument();
+      expect(await screen.findByText(/group@test.com/i)).toBeInTheDocument();
+      
     })
 })
