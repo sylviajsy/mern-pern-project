@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, vi } from "vitest";
 import IndividualForm from "../components/IndividualForm";
+import { DataProvider } from "../context/DataContext";
 
 describe('Individual Form Unit Test', () => {
     const mockOnAdd = vi.fn();
