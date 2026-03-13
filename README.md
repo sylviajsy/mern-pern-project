@@ -27,6 +27,8 @@ The application allows users to record animals being observed in the wild, manag
 5. User Feedback
 - Toast notifications
 
+![Image](https://github.com/user-attachments/assets/f6495a1f-62bd-4ed5-b0c5-8bf078d74033)
+
 ## Technologies Used
 **Frontend**
 - React
