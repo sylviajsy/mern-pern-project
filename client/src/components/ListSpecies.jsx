@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useReducer } from "react";
 import moment from "moment";
-import "../scss/ListSpecies.scss"
+import "../scss/ListSpecies.scss";
+import { toast } from "react-toastify";
 
 const initialState = {
   species: [],
@@ -44,7 +45,12 @@ const ListSpecies = () => {
     try {
         const res = await fetch("/api/species");
 
-        if (!res.ok) throw new Error(`Failed to fetch species (${res.status})`);
+        if (!res.ok) {
+          const errorMessage = `Failed to fetch species (${res.status})`;
+          toast.error(errorMessage);
+          dispatch({ type: "FETCH_ERROR", payload: errorMessage });
+          return
+        };
 
         const data = await res.json();
         console.log("species", data);

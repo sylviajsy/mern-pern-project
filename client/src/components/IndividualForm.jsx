@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
-import "../scss/IndividualForm.scss"
+import "../scss/IndividualForm.scss";
+import { toast } from "react-toastify";
 
 const IndividualForm = ({ onAdd }) => {
   const [species, setSpecies] = useState([]);
@@ -13,11 +14,15 @@ const IndividualForm = ({ onAdd }) => {
   const loadSpecies = async () => {
     try {
         const res = await fetch("/api/species");
-        if (!res.ok) throw new Error("Failed to fetch species");
+        if (!res.ok) {
+          toast.error(data.error || "Failed to fetch species");
+          return;
+        }
         const data = await res.json();
         setSpecies(data);
       } catch (error) {
         console.log(error);
+        toast.error("Network error. Please try again later.");
       };
   }
 

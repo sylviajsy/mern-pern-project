@@ -5,6 +5,7 @@ import SightingsForm from "./SightingsForm";
 import "../scss/ListSightings.scss"
 import "../scss/SightingsGroup.scss"
 import SearchBar from "./SearchBar";
+import { toast } from "react-toastify";
 
 function groupByNickname(sightings) {
   return sightings.reduce((acc, s) => {
@@ -31,10 +32,17 @@ const ListSightings = () => {
             const response = await fetch("/api/sightings/group");
 
             const data = await response.json();
+
+            if (!response.ok) {
+                toast.error(data.error || "Failed to load group sightings");
+                return;
+            }
+
             console.log('GroupSightings',data);
             setGroupSightings(data);
-        } catch (err) {
-            console.log(err);
+        } catch (error) {
+            console.log(error);
+            toast.error("Network error. Please try again later.");
         }
     };
 
@@ -62,15 +70,18 @@ const ListSightings = () => {
 
             if (response.ok){
                 const data = await response.json();
+                toast.success("Sighting added successfully");
                 await actions.refreshAfterSightingChange();
+                await loadGroupSightings();
                 setFilteredSightings(null);
                 setModal(false);
             } else {
                 const errorData = await response.json(); 
-                window.alert(errorData.error); 
+                toast.error(errorData.error || "Failed to add sighting");
             }
         } catch (error) {
             console.log(error);
+            toast.error("Network error. Please try again later.");
         }
     }
 
@@ -83,7 +94,7 @@ const ListSightings = () => {
                 const data = await response.json();
                 console.log('Search data', data)
                 if (data.length === 0) {
-                    window.alert("No sightings found matching your criteria. Showing all sightings instead.");
+                    toast.error("No sightings found matching your criteria. Showing all sightings instead.");
                     setFilteredSightings(null);
                     await loadSightings();
                     return;
@@ -91,10 +102,11 @@ const ListSightings = () => {
                    setFilteredSightings(data); 
                 } else {
                     const errorData = await response.json();
-                    window.alert(errorData.error);
+                    toast.error(errorData.error);
                 }
             } catch (error) {
                 console.log("Search failed:", error);
+                toast.error("Network error. Please try again later.");
             }
     }
 

@@ -3,7 +3,8 @@ import { useData } from "../context/DataContext";
 import moment from "moment";
 import IndividualForm from "./IndividualForm";
 import IndividualDetailModal from "./IndividualDetailModal";
-import "../scss/ListIndividuals.scss"
+import "../scss/ListIndividuals.scss";
+import { toast } from "react-toastify";
 
 const ListIndividuals = () => {
     const { state, actions } = useData();
@@ -30,14 +31,16 @@ const ListIndividuals = () => {
             if (response.ok){
                 const data = await response.json();
                 console.log("Individuals:", data);
+                toast.success("Individual added successfully");
                 await actions.loadIndividuals();
                 setModal(false);
             } else {
-                const errorData = await response.json(); 
-                console.error("Res not ok:", errorData); 
+                const errorData = await response.json();
+                toast.error(errorData.error || "Failed to add individual");  
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error("Network error. Please try again later.");
         }
     }
 
@@ -48,14 +51,15 @@ const ListIndividuals = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                window.alert(data.error || "Failed to fetch details");
+                toast.error(data.error || "Failed to fetch details");
                 return;
             }
 
             setSelectedIndividuals(data);
             setDetailModal(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error("Network error. Please try again later.");
         }
     }
 
