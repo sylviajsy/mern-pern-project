@@ -47,6 +47,12 @@ The application allows users to record animals being observed in the wild, manag
 - delete individuals
 - delete sightings
 
+## Tests
+- API testing (on Postman)
+- Backend unit tests
+- Frontend Integration test
+- Frontend Unit test
+
 ## Technologies Used
 **Frontend**
 - React
