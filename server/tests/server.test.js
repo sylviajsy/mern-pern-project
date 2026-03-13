@@ -111,5 +111,4 @@ describe('Backend route handler unit tests', () => {
             photo_url: "https://example.com/lion.jpg",
         });
     });
-
 })
