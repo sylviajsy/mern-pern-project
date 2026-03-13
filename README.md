@@ -26,6 +26,7 @@ The application allows users to record animals being observed in the wild, manag
 
 5. User Feedback
 - Toast notifications
+![alt text](Untitleddesign-ezgif.com-video-to-gif-converter.gif)
 
 ## Technologies Used
 **Frontend**
