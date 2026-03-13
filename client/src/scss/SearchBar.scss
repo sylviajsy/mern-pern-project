@@ -1,0 +1,39 @@
+.search-section {
+  max-width: 1200px;
+  margin: 0 auto 1rem auto;
+  padding: 0 2rem;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-family: "Inter", -apple-system, sans-serif;
+}
+
+.search-section label {
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+}
+
+.search-section input {
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.search-section button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-section button:hover {
+  background: #1d4ed8;
+}
