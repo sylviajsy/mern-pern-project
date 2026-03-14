@@ -264,8 +264,13 @@ app.post('/api/sightings/group', async (req, res) => {
         });
     }
 
+    // validate email format
+    if (!/\S+@\S+\.\S+/.test(sighter_email)) {
+        return res.status(400).json({
+            error: "Please enter a valid email address.",
+        });
+    }
 
-    
     try {
         // Use Transaction to make sure both success, otherwise both fail
         const client = await db.connect();
