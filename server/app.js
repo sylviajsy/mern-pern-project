@@ -256,7 +256,28 @@ app.get('/api/sightings/group', async (req, res) => {
 // Add Group Sightings
 app.post('/api/sightings/group', async (req, res) => {
     const { sighting_time, location, is_healthy, sighter_email, individual_ids } = req.body;
-    
+
+    // validate required fields
+    if (!sighting_time || !location || !sighter_email) {
+        return res.status(400).json({
+            error: "Sighting time, location, and sighter email are required.",
+        });
+    }
+
+    // validate email format
+    if (!/\S+@\S+\.\S+/.test(sighter_email)) {
+        return res.status(400).json({
+            error: "Please enter a valid email address.",
+        });
+    }
+
+    // validate group members
+    if (!Array.isArray(individual_ids) || individual_ids.length === 0) {
+        return res.status(400).json({
+            error: "Please select at least one individual.",
+        });
+    }
+
     try {
         // Use Transaction to make sure both success, otherwise both fail
         const client = await db.connect();
