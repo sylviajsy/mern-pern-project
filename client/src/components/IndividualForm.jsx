@@ -15,7 +15,8 @@ const IndividualForm = ({ onAdd }) => {
     try {
         const res = await fetch("/api/species");
         if (!res.ok) {
-          toast.error(data.error || "Failed to fetch species");
+          const errorData = await response.json();
+          toast.error(errorData || "Failed to fetch species");
           return;
         }
         const data = await res.json();

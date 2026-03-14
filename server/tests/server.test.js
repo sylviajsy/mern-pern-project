@@ -1,0 +1,218 @@
+const app = require("../app");
+const db = require('../db/db-connection');
+
+// Mock db.query
+jest.mock("../db/db-connection", () => ({
+  query: jest.fn(),
+  connect: jest.fn(),
+}));
+
+function mockRes() {
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  res.send = jest.fn().mockReturnValue(res);
+  res.end = jest.fn().mockReturnValue(res);
+  return res;
+}
+
+function mockReq({ params = {}, body = {}, query = {} } = {}) {
+  return { params, body, query };
+}
+
+function getHandler(app, method, path) {
+  const layer = app._router.stack.find(
+    (l) => l.route && l.route.path === path && l.route.methods[method]
+  );
+  return layer.route.stack[0].handle;
+}
+
+describe('Backend route handler unit tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('GET /api/sightings/group - returns grouped sightings', async () => {
+        db.query.mockResolvedValueOnce({
+            rows: [
+                {
+                id: 20,
+                sighting_time: "2026-03-11T03:02:00.000Z",
+                location: "SiChuan Wolong Reserve",
+                is_healthy: true,
+                sighter_email: "group@test.com",
+                individuals: ["Bao Bao", "Mei Xiang"],
+                },
+            ],
+        })
+
+        const handler = getHandler(app, "get", "/api/sightings/group");
+        const req = mockReq();
+        const res = mockRes();
+
+        await handler(req, res);
+
+        const [sql] = db.query.mock.calls[0];
+        expect(sql).toMatch(/ARRAY_AGG\(i\.nickname ORDER BY i\.nickname\) AS individuals/i);
+        expect(sql).toMatch(/HAVING COUNT\(si\.individual_id\) > 1/i);
+
+        expect(res.json).toHaveBeenCalledWith([
+        {
+            id: 20,
+            sighting_time: "2026-03-11T03:02:00.000Z",
+            location: "SiChuan Wolong Reserve",
+            is_healthy: true,
+            sighter_email: "group@test.com",
+            individuals: ["Bao Bao", "Mei Xiang"],
+        },
+        ]);
+    })
+
+    test("PUT /api/individuals/:id - updates an individual", async () => {
+        db.query.mockResolvedValueOnce({
+            rows: [
+                {
+                id: 1,
+                nickname: "Leo",
+                scientist_name: "Dr. Jones",
+                species_id: 3,
+                wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+                photo_url: "https://example.com/lion.jpg",
+                },
+            ],
+        });
+
+        const handler = getHandler(app, "put", "/api/individuals/:id");
+        const req = mockReq({
+            params: { id: "1" },
+            body: {
+                nickname: "Leo",
+                scientist_name: "Dr. Jones",
+                species_id: 3,
+                wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+                photo_url: "https://example.com/lion.jpg",
+            },
+        });
+        const res = mockRes();
+
+        await handler(req, res);
+
+        const [sql, values] = db.query.mock.calls[0];
+        expect(sql).toMatch(/UPDATE individuals/i);
+        expect(values[0]).toBe("Leo");
+        expect(values[1]).toBe("Dr. Jones");
+        expect(values[2]).toBe(3);
+        expect(values[5]).toBe("1");
+
+        expect(res.json).toHaveBeenCalledWith({
+            id: 1,
+            nickname: "Leo",
+            scientist_name: "Dr. Jones",
+            species_id: 3,
+            wikipedia_url: "https://en.wikipedia.org/wiki/Lion",
+            photo_url: "https://example.com/lion.jpg",
+        });
+    });
+
+    test('DELETE /api/sightings/:id -> deletes a sighting', async () => {
+        db.query.mockResolvedValueOnce({
+            rows: [
+                {
+                    id: 20,
+                    sighting_time: "2026-03-11T03:02:00.000Z",
+                    location: "SiChuan Wolong Reserve",
+                    is_healthy: true,
+                    sighter_email: "group@test.com",
+                    individuals: ["Bao Bao", "Mei Xiang"],
+                },
+            ]
+        });
+
+        const handler = getHandler(app, "delete", "/api/sightings/:id");
+
+        const req = mockReq({
+            params: { id: "20" }
+        });
+
+        const res = mockRes();
+
+        await handler(req, res);
+
+        const [sql, values] = db.query.mock.calls[0];
+
+        expect(sql).toMatch(/DELETE FROM sightings/i);
+        expect(values).toEqual(["20"]);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.end).toHaveBeenCalled();
+    })
+
+    test("POST /api/sightings/group -> creates group sighting", async () => {
+        const mockClient = {
+            query: jest.fn(),
+        };
+
+        db.connect.mockResolvedValueOnce(mockClient);
+
+        mockClient.query
+            .mockResolvedValueOnce() // BEGIN
+            .mockResolvedValueOnce({ rows: [{ id: 20 }] }) // INSERT sightings
+            .mockResolvedValueOnce() // INSERT sighting_individuals
+            .mockResolvedValueOnce() // INSERT sighting_individuals
+            .mockResolvedValueOnce(); // COMMIT
+
+        const handler = getHandler(app, "post", "/api/sightings/group");
+
+        const req = mockReq({
+            body: {
+                sighting_time: "2026-03-11T03:02:00.000Z",
+                location: "SiChuan Wolong Reserve",
+                is_healthy: true,
+                sighter_email: "group@test.com",
+                individual_ids: [5, 6],
+            },
+        });
+
+        const res = mockRes();
+
+        await handler(req, res);
+
+        expect(db.connect).toHaveBeenCalled();
+
+        expect(mockClient.query).toHaveBeenNthCalledWith(1, "BEGIN");
+
+        expect(mockClient.query).toHaveBeenNthCalledWith(
+            2,
+            expect.stringMatching(/INSERT INTO sightings/i),
+            [
+            "2026-03-11T03:02:00.000Z",
+            "SiChuan Wolong Reserve",
+            true,
+            "group@test.com",
+            ]
+        );
+
+        expect(mockClient.query).toHaveBeenNthCalledWith(
+            3,
+            expect.stringMatching(/INSERT INTO sighting_individuals/i),
+            [20, 5]
+        );
+
+        expect(mockClient.query).toHaveBeenNthCalledWith(
+            4,
+            expect.stringMatching(/INSERT INTO sighting_individuals/i),
+            [20, 6]
+        );
+
+        expect(mockClient.query).toHaveBeenNthCalledWith(5, "COMMIT");
+
+        expect(res.status).toHaveBeenCalledWith(201);
+
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Group sighting recorded",
+            id: 20,
+            individual_ids: [5, 6],
+        });
+
+    });
+})

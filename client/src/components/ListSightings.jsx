@@ -34,7 +34,8 @@ const ListSightings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                toast.error(data.error || "Failed to load group sightings");
+                const errorData = await response.json();
+                toast.error(errorData || "Failed to load group sightings");
                 return;
             }
 

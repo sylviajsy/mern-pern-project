@@ -51,7 +51,8 @@ const ListIndividuals = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                toast.error(data.error || "Failed to fetch details");
+                const errorData = await response.json();
+                toast.error(errorData || "Failed to fetch details");
                 return;
             }
 
