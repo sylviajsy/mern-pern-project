@@ -271,6 +271,13 @@ app.post('/api/sightings/group', async (req, res) => {
         });
     }
 
+    // validate group members
+    if (!Array.isArray(individual_ids) || individual_ids.length === 0) {
+        return res.status(400).json({
+            error: "Please select at least one individual.",
+        });
+    }
+
     try {
         // Use Transaction to make sure both success, otherwise both fail
         const client = await db.connect();
